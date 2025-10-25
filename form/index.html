@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Form Demo</title>
+    <style>
+        /* Global Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Modern gradient background */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background: #f8f9ff;
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Main container wrapper */
+        .wrapper {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Form container styling */
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            animation: slideIn 0.5s ease;
+        }
+
+        /* Form title */
+        .form-container h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-container p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Label styling */
+        label {
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Input field styling */
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #aaa;
+        }
+
+        /* Submit button styling */
+        button[type="submit"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* External button styling */
+        .external-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .external-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Result display section */
+        .result-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border-left: 4px solid #667eea;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-section h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-section p {
+            color: #555;
+            font-size: 1rem;
+            margin: 5px 0;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Code viewer section */
+        .code-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 550px;
+            width: 100%;
+            animation: slideIn 0.5s ease 0.1s both;
+        }
+
+        .code-section h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Code display area */
+        .code-display {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        /* Syntax highlighting colors */
+        .code-display .tag {
+            color: #569cd6;
+        }
+
+        .code-display .attr {
+            color: #9cdcfe;
+        }
+
+        .code-display .value {
+            color: #ce9178;
+        }
+
+        .code-display .comment {
+            color: #6a9955;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+
+            .form-container,
+            .code-section {
+                max-width: 100%;
+            }
+
+            .form-container h2 {
+                font-size: 1.6rem;
+            }
+
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Custom scrollbar for code display */
+        .code-display::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .code-display::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 10px;
+        }
+
+        .code-display::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .code-display::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Home button -->
+    <a href="../index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+
+    <div class="wrapper">
+        <!-- Form Section -->
+        <div class="form-container">
+            <h2>📝 User Form</h2>
+            <p>Enter your username and submit the form</p>
+
+            <!-- Main Form -->
+            <form id="myForm" action="/submit" method="post">
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required />
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+
+            <!-- Result Display -->
+            <div class="result-section" id="resultSection">
+                <h3>✅ Form Submitted!</h3>
+                <p>Username: <span class="result-value" id="resultUsername"></span></p>
+                <p>Action: <span class="result-value">/submit</span></p>
+                <p>Method: <span class="result-value">POST</span></p>
+            </div>
+
+            <!-- External Button Demo -->
+            <button class="external-btn" type="submit" form="myForm">
+                External Submit Button
+            </button>
+            <p style="font-size: 0.85rem; color: #888; margin-top: 10px;">
+                ↑ This button is outside the form but associated with it
+            </p>
+        </div>
+
+        <!-- Code Viewer Section -->
+        <div class="code-section">
+            <h3>💻 Source Code</h3>
+            <div class="code-display" id="codeDisplay"></div>
+            <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+                Copy Code
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // The complete source code as a string
+        const sourceCode = `<form id="myForm" action="/submit" method="post">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" />
+</form>
+
+<!-- External button associated with form -->
+<button type="submit" form="myForm">Submit</button>`;
+
+        // Display the code with basic syntax highlighting
+        function displayCode() {
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            // Enhanced HTML escaping and syntax highlighting
+            let highlighted = sourceCode
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/(&lt;\/?[\w]+)/g, '<span class="tag">$1</span>')
+                .replace(/([\w-]+)=/g, '<span class="attr">$1</span>=')
+                .replace(/="([^"]*)"/g, '="<span class="value">$1</span>"')
+                .replace(/(&lt;!--.*?--&gt;)/g, '<span class="comment">$1</span>');
+            
+            codeDisplay.innerHTML = `<pre>${highlighted}</pre>`;
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Use the Clipboard API to copy text
+            navigator.clipboard.writeText(sourceCode).then(() => {
+                // Change button text and style on success
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy Code';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                // Handle errors
+                console.error('Failed to copy:', err);
+                copyBtn.textContent = 'Failed to copy';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy Code';
+                }, 2000);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+            // Prevent actual form submission (since this is a demo)
+            e.preventDefault();
+            
+            // Get the username value
+            const username = document.getElementById('username').value;
+            
+            // Display the result
+            const resultSection = document.getElementById('resultSection');
+            const resultUsername = document.getElementById('resultUsername');
+            
+            resultUsername.textContent = username;
+            resultSection.classList.add('show');
+            
+            // Log form data to console
+            console.log('Form submitted with data:');
+            console.log('Username:', username);
+            console.log('Action:', this.action);
+            console.log('Method:', this.method);
+            
+            // You can also create FormData object
+            const formData = new FormData(this);
+            console.log('FormData entries:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            
+            // Simulate success message
+            setTimeout(() => {
+                alert(`Form submitted successfully!\nUsername: ${username}`);
+            }, 100);
+        });
+
+        // Initialize code display when page loads
+        displayCode();
+    </script>
+</body>
+
+</html>

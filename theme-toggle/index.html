@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS-Only Theme Toggle</title>
+    <style>
+        /* Global Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Define CSS variables for themes */
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: light-dark(
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+                linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)
+            );
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: light-dark(white, #1e1e2e);
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            background: light-dark(#f8f9ff, #2d2d3d);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Main container */
+        .container {
+            background: light-dark(white, #1e1e2e);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
+            max-width: 700px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+            transition: all 0.5s ease;
+        }
+
+        /* Heading styles */
+        h2 {
+            color: light-dark(#333, #fff);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: light-dark(#666, #aaa);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* Theme selector section */
+        .theme-selector {
+            background: light-dark(#f8f9fa, #2d2d3d);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .theme-selector label {
+            display: block;
+            font-weight: 600;
+            color: light-dark(#333, #fff);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Style select dropdown */
+        select {
+            appearance: none;
+            padding: 14px 40px 14px 20px;
+            border: 2px solid light-dark(#e0e0e0, #404040);
+            border-radius: 12px;
+            background-color: light-dark(white, #1e1e2e);
+            color: light-dark(#333, #fff);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            min-width: 200px;
+        }
+
+        select:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Code display section with macOS window style */
+        .code-window {
+            background: #1e1e2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* macOS window buttons */
+        .window-header {
+            background: #2d2d3d;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d4d;
+        }
+
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .window-button.red {
+            background: #ff5f56;
+        }
+
+        .window-button.yellow {
+            background: #ffbd2e;
+        }
+
+        .window-button.green {
+            background: #27c93f;
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            color: #8b8b8b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 36px;
+        }
+
+        /* Success checkmark */
+        .success-mark {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: #27c93f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            animation: checkPop 0.3s ease;
+        }
+
+        @keyframes checkPop {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Code display */
+        .code-content {
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #d4d4d4;
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        /* Syntax highlighting */
+        .selector {
+            color: #d7ba7d;
+        }
+
+        .property {
+            color: #9cdcfe;
+        }
+
+        .value-light {
+            color: #ce9178;
+        }
+
+        .value-dark {
+            color: #ce9178;
+        }
+
+        .function {
+            color: #dcdcaa;
+        }
+
+        .keyword {
+            color: #c586c0;
+        }
+
+        .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+
+        /* Info section */
+        .info-box {
+            background: light-dark(#e8f4ff, #1a2332);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            transition: all 0.5s ease;
+        }
+
+        .info-box h3 {
+            color: light-dark(#333, #fff);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-box p {
+            color: light-dark(#555, #ccc);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info-box code {
+            background: light-dark(#f0f0f0, #2d2d3d);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: light-dark(#d63384, #ff6b9d);
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .code-content {
+                font-size: 0.8rem;
+            }
+
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Home button -->
+    <a href="../index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+
+    <div class="container">
+        <h2>🎨 CSS-Only Theme Toggle</h2>
+        <p class="subtitle">Pure CSS theme switching with light-dark() function</p>
+
+        <!-- Theme Selector -->
+        <div class="theme-selector">
+            <label for="theme">Select Color Scheme:</label>
+            <select id="theme">
+                <option value="light">☀️ Light Mode</option>
+                <option value="dark">🌙 Dark Mode</option>
+            </select>
+        </div>
+
+        <!-- Code Display with macOS Window Style -->
+        <div class="code-window">
+            <div class="window-header">
+                <div class="window-button red"></div>
+                <div class="window-button yellow"></div>
+                <div class="window-button green"></div>
+                <div class="window-title">CSS</div>
+                <div class="success-mark">✓</div>
+            </div>
+            <div class="code-content">
+                <span class="code-line"><span class="selector">:root</span> {</span>
+                <span class="code-line">  <span class="property">color-scheme</span>: <span class="value-light">light</span> <span class="value-dark">dark</span>;</span>
+                <span class="code-line">}</span>
+                <span class="code-line"></span>
+                <span class="code-line"><span class="selector">body</span> {</span>
+                <span class="code-line">  <span class="property">background-color</span>: <span class="function">light-dark</span>(<span class="value-light">white</span>, <span class="value-dark">#1a1a1a</span>);</span>
+                <span class="code-line">  <span class="property">color</span>: <span class="function">light-dark</span>(<span class="value-light">black</span>, <span class="value-dark">white</span>);</span>
+                <span class="code-line">}</span>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>💡 How It Works</h3>
+            <p>This demo uses the new CSS <code>light-dark()</code> function which switches values based on the <code>color-scheme</code> property.</p>
+            <p><strong>No JavaScript needed!</strong> The browser automatically applies the correct theme based on the user's system preference or the select dropdown.</p>
+        </div>
+
+        <!-- Copy Button -->
+        <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+            📋 Copy CSS Code
+        </button>
+    </div>
+
+    <script>
+        // Only for handling the select dropdown to change color-scheme
+        const themeSelect = document.getElementById('theme');
+        
+        themeSelect.addEventListener('change', (e) => {
+            document.documentElement.style.colorScheme = e.target.value;
+        });
+
+        // Copy function
+        function copyCode() {
+            const cssCode = `:root {
+  color-scheme: light dark;
+}
+
+body {
+  background-color: light-dark(white, #1a1a1a);
+  color: light-dark(black, white);
+}`;
+
+            const copyBtn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(cssCode).then(() => {
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy CSS Code';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+    </script>
+</body>
+
+</html>
