@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Demo</title>
+    <style>
+        /* Global Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Modern gradient background */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        /* Main container */
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        /* Heading styles */
+        h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* Input section */
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        /* Input field styling */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Language selector */
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Speak button */
+        .speak-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .speak-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .speak-btn:active {
+            transform: translateY(0);
+        }
+
+        .speak-btn.speaking {
+            background: #10b981;
+        }
+
+        /* Code window with macOS style */
+        .code-window {
+            background: #1e1e2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        /* Window header */
+        .window-header {
+            background: #2d2d3d;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d4d;
+        }
+
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .window-button.red {
+            background: #ff5f56;
+        }
+
+        .window-button.yellow {
+            background: #ffbd2e;
+        }
+
+        .window-button.green {
+            background: #27c93f;
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            color: #8b8b8b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 36px;
+        }
+
+        /* Code content */
+        .code-content {
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #d4d4d4;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Syntax highlighting */
+        .tag {
+            color: #569cd6;
+        }
+
+        .attr {
+            color: #9cdcfe;
+        }
+
+        .value {
+            color: #ce9178;
+        }
+
+        .keyword {
+            color: #c586c0;
+        }
+
+        .function-name {
+            color: #dcdcaa;
+        }
+
+        .variable {
+            color: #9cdcfe;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .operator {
+            color: #d4d4d4;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        /* Info box */
+        .info-box {
+            background: #e8f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+  /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: light-dark(white, #1e1e2e);
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            background: light-dark(#f8f9ff, #2d2d3d);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .speaking {
+            animation: pulse 1s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .code-content {
+                font-size: 0.8rem;
+            }
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .code-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .code-content::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 10px;
+        }
+
+        .code-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+     <!-- Home button -->
+    <a href="../index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+    <div class="container">
+        <h2>🔊 Text to Speech</h2>
+        <p class="subtitle">Enter text and let the browser speak it!</p>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="input-group">
+                <label for="textInput">Text to Speak</label>
+                <textarea id="textInput" placeholder="Enter text here...">مرحباً بك في تقنية تحويل النص إلى كلام</textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="languageSelect">Language</label>
+                <select id="languageSelect">
+                    <option value="ar-SA">🇸🇦 Arabic</option>
+                    <option value="en-US">🇺🇸 English (US)</option>
+                    <option value="en-GB">🇬🇧 English (UK)</option>
+                    <option value="fr-FR">🇫🇷 French</option>
+                    <option value="de-DE">🇩🇪 German</option>
+                    <option value="es-ES">🇪🇸 Spanish</option>
+                </select>
+            </div>
+
+            <button class="speak-btn" id="speakBtn" onclick="speakText()">
+                <span id="speakIcon">🔊</span>
+                <span id="speakLabel">Speak</span>
+            </button>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p>💡 <strong>Tip:</strong> This uses the Web Speech API built into modern browsers. No external libraries needed!</p>
+        </div>
+
+        <!-- Code Display -->
+        <div class="code-window">
+            <div class="window-header">
+                <div class="window-button red"></div>
+                <div class="window-button yellow"></div>
+                <div class="window-button green"></div>
+                <div class="window-title">JavaScript</div>
+            </div>
+            <div class="code-content" id="codeDisplay"></div>
+        </div>
+
+        <!-- Copy Button -->
+        <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+            📋 Copy Code
+        </button>
+    </div>
+
+    <script>
+        // Speech synthesis function
+        function speakText() {
+            const text = document.getElementById('textInput').value;
+            const language = document.getElementById('languageSelect').value;
+            const speakBtn = document.getElementById('speakBtn');
+            const speakIcon = document.getElementById('speakIcon');
+            const speakLabel = document.getElementById('speakLabel');
+
+            if (!text.trim()) {
+                alert('Please enter some text!');
+                return;
+            }
+
+            // Create speech synthesis utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = language;
+            utterance.rate = 1; // Speech rate
+            utterance.pitch = 1; // Speech pitch
+            utterance.volume = 1; // Volume
+
+            // Update button while speaking
+            utterance.onstart = () => {
+                speakBtn.classList.add('speaking');
+                speakIcon.textContent = '⏸️';
+                speakLabel.textContent = 'Speaking...';
+            };
+
+            utterance.onend = () => {
+                speakBtn.classList.remove('speaking');
+                speakIcon.textContent = '🔊';
+                speakLabel.textContent = 'Speak';
+            };
+
+            // Speak the text
+            speechSynthesis.speak(utterance);
+        }
+
+        // Display code with syntax highlighting
+        function displayCode() {
+            const code = `<span class="comment">// HTML</span>
+<span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="value">"textInput"</span> <span class="attr">type</span>=<span class="value">"text"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="value">"speakText()"</span><span class="tag">&gt;</span>تكلم<span class="tag">&lt;/button&gt;</span>
+
+<span class="comment">// JavaScript</span>
+<span class="keyword">function</span> <span class="function-name">speakText</span>() {
+  <span class="keyword">const</span> <span class="variable">text</span> <span class="operator">=</span> document.getElementById(<span class="string">'textInput'</span>).value;
+  
+  <span class="comment">// Create speech utterance</span>
+  <span class="keyword">const</span> <span class="variable">utterance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function-name">SpeechSynthesisUtterance</span>(text);
+  <span class="variable">utterance</span>.lang <span class="operator">=</span> <span class="string">'ar-SA'</span>;
+  
+  <span class="comment">// Speak the text</span>
+  speechSynthesis.<span class="function-name">speak</span>(<span class="variable">utterance</span>);
+}`;
+
+            document.getElementById('codeDisplay').innerHTML = code;
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const sourceCode = `<input id="textInput" type="text">
+<button onclick="speakText()">تكلم</button>
+
+<script>
+function speakText() {
+  const text = document.getElementById('textInput').value;
+  
+  // Create speech utterance
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ar-SA';
+  
+  // Speak the text
+  speechSynthesis.speak(utterance);
+}
+<\/script>`;
+
+            const copyBtn = document.getElementById('copyBtn');
+
+            navigator.clipboard.writeText(sourceCode).then(() => {
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy Code';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Initialize
+        displayCode();
+
+        // Allow Enter key to speak
+        document.getElementById('textInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                speakText();
+            }
+        });
+    </script>
+</body>
+
+</html>
