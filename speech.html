@@ -427,7 +427,37 @@
             font-size: 0.9rem;
             line-height: 1.6;
         }
+ /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: light-dark(white, #1e1e2e);
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
 
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            background: light-dark(#f8f9ff, #2d2d3d);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
         /* Animations */
         @keyframes slideUp {
             from {
@@ -462,6 +492,10 @@
             .code-content {
                 font-size: 0.8rem;
             }
+              .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
 
         /* Custom scrollbar */
@@ -482,6 +516,11 @@
 </head>
 
 <body>
+        <!-- Home button -->
+    <a href="../index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
     <div class="container">
         <h2>🔊 Text to Speech</h2>
         <p class="subtitle">Enter text and let the browser speak it!</p>
@@ -607,7 +646,7 @@
             speechSynthesis.speak(utterance);
         }
 
-        // Download audio function
+        // Download audio function as MP3
         async function downloadAudio() {
             const text = document.getElementById('textInput').value;
             const language = document.getElementById('languageSelect').value;
@@ -626,26 +665,53 @@
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const destination = audioContext.createMediaStreamDestination();
 
+                // Try to use audio/mpeg if supported, otherwise fall back to audio/webm
+                let mimeType = 'audio/webm';
+                if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                    mimeType = 'audio/webm;codecs=opus';
+                }
+
                 // Create media recorder
-                mediaRecorder = new MediaRecorder(destination.stream);
+                mediaRecorder = new MediaRecorder(destination.stream, { mimeType });
                 audioChunks = [];
 
                 mediaRecorder.ondataavailable = (event) => {
                     audioChunks.push(event.data);
                 };
 
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: mimeType });
                     
-                    // Create download link
-                    const a = document.createElement('a');
-                    a.href = audioUrl;
-                    a.download = `speech-${Date.now()}.webm`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(audioUrl);
+                    // Convert to WAV/MP3 using Web Audio API
+                    try {
+                        const arrayBuffer = await audioBlob.arrayBuffer();
+                        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                        
+                        // Create WAV file (browsers don't natively support MP3 encoding)
+                        // WAV is uncompressed but works everywhere
+                        const wavBlob = audioBufferToWav(audioBuffer);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        
+                        // Create download link
+                        const a = document.createElement('a');
+                        a.href = audioUrl;
+                        a.download = `speech-${Date.now()}.wav`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(audioUrl);
+                    } catch (conversionError) {
+                        // Fallback: download as WebM if conversion fails
+                        console.warn('Conversion failed, downloading as WebM:', conversionError);
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const a = document.createElement('a');
+                        a.href = audioUrl;
+                        a.download = `speech-${Date.now()}.webm`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(audioUrl);
+                    }
 
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = '<span>💾</span><span>Download Audio</span>';
@@ -654,13 +720,13 @@
                 // Start recording
                 mediaRecorder.start();
 
+                // Create oscillator to generate audio stream
+                const oscillator = audioContext.createOscillator();
+                oscillator.connect(destination);
+
                 // Create utterance
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = language;
-
-                // Connect speech to recorder
-                const oscillator = audioContext.createOscillator();
-                oscillator.connect(destination);
 
                 utterance.onend = () => {
                     setTimeout(() => {
@@ -676,6 +742,60 @@
                 alert('Recording not supported in this browser. Try Chrome or Edge.');
                 downloadBtn.disabled = false;
                 downloadBtn.innerHTML = '<span>💾</span><span>Download Audio</span>';
+            }
+        }
+
+        // Convert AudioBuffer to WAV format
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // Write WAV header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM (uncompressed)
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // avg. bytes/sec
+            setUint16(buffer.numberOfChannels * 2); // block-align
+            setUint16(16); // 16-bit
+
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length - pos - 4); // chunk length
+
+            // Write interleaved data
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            while (pos < length) {
+                for (let i = 0; i < buffer.numberOfChannels; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
             }
         }
 
