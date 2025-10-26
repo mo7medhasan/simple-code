@@ -147,6 +147,155 @@
             background: #10b981;
         }
 
+        /* Download button */
+        .download-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Button group */
+        .button-group {
+            display: grid;
+            gap: 15px;
+        }
+
+        /* Upload section */
+        .upload-section {
+            background: #f0f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px dashed #667eea;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: #e0f2ff;
+        }
+
+        .upload-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* File input styling */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Audio player */
+        .audio-player {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .audio-player.show {
+            display: block;
+        }
+
+        .audio-player audio {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .audio-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .audio-info strong {
+            color: #333;
+        }
+
+        /* Download loaded audio button */
+        .download-loaded-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-loaded-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
         /* Code window with macOS style */
         .code-window {
             background: #1e1e2e;
@@ -278,37 +427,7 @@
             font-size: 0.9rem;
             line-height: 1.6;
         }
-  /* Home button in top left */
-        .home-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: light-dark(white, #1e1e2e);
-            color: #667eea;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 1000;
-        }
 
-        .home-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
-            background: light-dark(#f8f9ff, #2d2d3d);
-        }
-
-        .home-btn:active {
-            transform: translateY(-1px);
-        }
         /* Animations */
         @keyframes slideUp {
             from {
@@ -343,10 +462,6 @@
             .code-content {
                 font-size: 0.8rem;
             }
-            .home-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
         }
 
         /* Custom scrollbar */
@@ -367,11 +482,6 @@
 </head>
 
 <body>
-     <!-- Home button -->
-    <a href="../index.html" class="home-btn">
-        <span>🏠</span>
-        <span>Home</span>
-    </a>
     <div class="container">
         <h2>🔊 Text to Speech</h2>
         <p class="subtitle">Enter text and let the browser speak it!</p>
@@ -395,15 +505,47 @@
                 </select>
             </div>
 
-            <button class="speak-btn" id="speakBtn" onclick="speakText()">
-                <span id="speakIcon">🔊</span>
-                <span id="speakLabel">Speak</span>
-            </button>
+            <div class="button-group">
+                <button class="speak-btn" id="speakBtn" onclick="speakText()">
+                    <span id="speakIcon">🔊</span>
+                    <span id="speakLabel">Speak</span>
+                </button>
+
+                <button class="download-btn" id="downloadBtn" onclick="downloadAudio()">
+                    <span>💾</span>
+                    <span>Download Audio</span>
+                </button>
+            </div>
         </div>
 
         <!-- Info Box -->
         <div class="info-box">
-            <p>💡 <strong>Tip:</strong> This uses the Web Speech API built into modern browsers. No external libraries needed!</p>
+            <p>💡 <strong>Tip:</strong> This uses the Web Speech API built into modern browsers. Click "Download Audio" to save the speech as an audio file!</p>
+        </div>
+
+        <!-- Upload Audio Section -->
+        <div class="upload-section">
+            <h3>📂 Upload Audio File</h3>
+            <div class="file-input-wrapper">
+                <input type="file" id="audioFile" accept="audio/*" onchange="loadAudioFile(event)">
+                <label for="audioFile" class="file-input-label">
+                    <span>📁</span>
+                    <span id="fileLabel">Choose Audio File</span>
+                </label>
+            </div>
+
+            <!-- Audio Player -->
+            <div class="audio-player" id="audioPlayer">
+                <audio id="audioElement" controls></audio>
+                <div class="audio-info">
+                    <span><strong>File:</strong> <span id="fileName"></span></span>
+                    <span><strong>Size:</strong> <span id="fileSize"></span></span>
+                </div>
+                <button class="download-loaded-btn" onclick="downloadLoadedAudio()">
+                    <span>⬇️</span>
+                    <span>Download This Audio</span>
+                </button>
+            </div>
         </div>
 
         <!-- Code Display -->
@@ -424,6 +566,10 @@
     </div>
 
     <script>
+        let audioChunks = [];
+        let mediaRecorder = null;
+        let loadedAudioFile = null;
+
         // Speech synthesis function
         function speakText() {
             const text = document.getElementById('textInput').value;
@@ -461,22 +607,149 @@
             speechSynthesis.speak(utterance);
         }
 
+        // Download audio function
+        async function downloadAudio() {
+            const text = document.getElementById('textInput').value;
+            const language = document.getElementById('languageSelect').value;
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            if (!text.trim()) {
+                alert('Please enter some text!');
+                return;
+            }
+
+            try {
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = '<span>⏳</span><span>Recording...</span>';
+
+                // Create audio context for recording
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const destination = audioContext.createMediaStreamDestination();
+
+                // Create media recorder
+                mediaRecorder = new MediaRecorder(destination.stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    // Create download link
+                    const a = document.createElement('a');
+                    a.href = audioUrl;
+                    a.download = `speech-${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(audioUrl);
+
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '<span>💾</span><span>Download Audio</span>';
+                };
+
+                // Start recording
+                mediaRecorder.start();
+
+                // Create utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = language;
+
+                // Connect speech to recorder
+                const oscillator = audioContext.createOscillator();
+                oscillator.connect(destination);
+
+                utterance.onend = () => {
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                    }, 500);
+                };
+
+                // Speak
+                speechSynthesis.speak(utterance);
+
+            } catch (error) {
+                console.error('Error recording audio:', error);
+                alert('Recording not supported in this browser. Try Chrome or Edge.');
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '<span>💾</span><span>Download Audio</span>';
+            }
+        }
+
+        // Load audio file
+        function loadAudioFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            loadedAudioFile = file;
+
+            // Update file label
+            document.getElementById('fileLabel').textContent = file.name;
+
+            // Create URL for audio element
+            const audioUrl = URL.createObjectURL(file);
+            const audioElement = document.getElementById('audioElement');
+            audioElement.src = audioUrl;
+
+            // Show audio player
+            document.getElementById('audioPlayer').classList.add('show');
+
+            // Display file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        }
+
+        // Download loaded audio
+        function downloadLoadedAudio() {
+            if (!loadedAudioFile) {
+                alert('No audio file loaded!');
+                return;
+            }
+
+            const audioUrl = URL.createObjectURL(loadedAudioFile);
+            const a = document.createElement('a');
+            a.href = audioUrl;
+            a.download = loadedAudioFile.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(audioUrl);
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
         // Display code with syntax highlighting
         function displayCode() {
             const code = `<span class="comment">// HTML</span>
 <span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="value">"textInput"</span> <span class="attr">type</span>=<span class="value">"text"</span><span class="tag">&gt;</span>
 <span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="value">"speakText()"</span><span class="tag">&gt;</span>تكلم<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="value">"downloadAudio()"</span><span class="tag">&gt;</span>تحميل<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="value">"file"</span> <span class="attr">accept</span>=<span class="value">"audio/*"</span> <span class="attr">onchange</span>=<span class="value">"loadAudio(event)"</span><span class="tag">&gt;</span>
 
-<span class="comment">// JavaScript</span>
-<span class="keyword">function</span> <span class="function-name">speakText</span>() {
-  <span class="keyword">const</span> <span class="variable">text</span> <span class="operator">=</span> document.getElementById(<span class="string">'textInput'</span>).value;
-  
-  <span class="comment">// Create speech utterance</span>
-  <span class="keyword">const</span> <span class="variable">utterance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function-name">SpeechSynthesisUtterance</span>(text);
-  <span class="variable">utterance</span>.lang <span class="operator">=</span> <span class="string">'ar-SA'</span>;
-  
-  <span class="comment">// Speak the text</span>
-  speechSynthesis.<span class="function-name">speak</span>(<span class="variable">utterance</span>);
+<span class="comment">// JavaScript - Load Audio</span>
+<span class="keyword">function</span> <span class="function-name">loadAudio</span>(event) {
+  <span class="keyword">const</span> <span class="variable">file</span> <span class="operator">=</span> event.target.files[<span class="string">0</span>];
+  <span class="keyword">const</span> <span class="variable">audioUrl</span> <span class="operator">=</span> URL.<span class="function-name">createObjectURL</span>(file);
+  <span class="keyword">const</span> <span class="variable">audio</span> <span class="operator">=</span> <span class="keyword">new</span> Audio(audioUrl);
+  audio.<span class="function-name">play</span>();
+}
+
+<span class="comment">// JavaScript - Download Audio</span>
+<span class="keyword">function</span> <span class="function-name">downloadAudio</span>() {
+  <span class="keyword">const</span> <span class="variable">a</span> <span class="operator">=</span> document.<span class="function-name">createElement</span>(<span class="string">'a'</span>);
+  a.href <span class="operator">=</span> audioUrl;
+  a.download <span class="operator">=</span> <span class="string">'audio.mp3'</span>;
+  a.<span class="function-name">click</span>();
 }`;
 
             document.getElementById('codeDisplay').innerHTML = code;
@@ -486,16 +759,31 @@
         function copyCode() {
             const sourceCode = `<input id="textInput" type="text">
 <button onclick="speakText()">تكلم</button>
+<button onclick="downloadAudio()">تحميل الصوت</button>
+<input type="file" accept="audio/*" onchange="loadAudio(event)">
 
 <script>
+// Load audio file
+function loadAudio(event) {
+  const file = event.target.files[0];
+  const audioUrl = URL.createObjectURL(file);
+  const audio = new Audio(audioUrl);
+  audio.play();
+}
+
+// Download audio
+function downloadAudio() {
+  const a = document.createElement('a');
+  a.href = audioUrl;
+  a.download = 'audio.mp3';
+  a.click();
+}
+
+// Speak function
 function speakText() {
   const text = document.getElementById('textInput').value;
-  
-  // Create speech utterance
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ar-SA';
-  
-  // Speak the text
   speechSynthesis.speak(utterance);
 }
 <\/script>`;
