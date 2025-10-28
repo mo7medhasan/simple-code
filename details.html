@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details/Summary Demo</title>
+    <style>
+        /* Global Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Modern gradient background */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        /* Main container */
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        /* Heading styles */
+        h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* Preview section */
+        .preview-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .preview-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* Modern Details/Summary styling */
+        details {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        details:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        details[open] {
+            border-color: #667eea;
+        }
+
+        /* Summary styling */
+        summary {
+            padding: 18px 20px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        summary:hover {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        /* Remove default marker */
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::marker {
+            display: none;
+        }
+
+        /* Custom arrow icon */
+        summary::before {
+            content: '▶';
+            font-size: 0.8rem;
+            color: #667eea;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        /* Content styling with animation */
+        details[open] .details-content {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .details-content {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: #fafbfc;
+        }
+
+        .details-content p {
+            color: #555;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .details-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .details-content li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .details-content li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Code window */
+        .code-window {
+            background: #1e1e2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .window-header {
+            background: #2d2d3d;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d4d;
+        }
+
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .window-button.red {
+            background: #ff5f56;
+        }
+
+        .window-button.yellow {
+            background: #ffbd2e;
+        }
+
+        .window-button.green {
+            background: #27c93f;
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            color: #8b8b8b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 36px;
+        }
+
+        /* Code content */
+        .code-content {
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #d4d4d4;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Syntax highlighting */
+        .tag {
+            color: #569cd6;
+        }
+
+        .attr {
+            color: #9cdcfe;
+        }
+
+        .value {
+            color: #ce9178;
+        }
+
+        .text {
+            color: #d4d4d4;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Info box */
+        .info-box {
+            background: #e8f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: light-dark(white, #1e1e2e);
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            background: light-dark(#f8f9ff, #2d2d3d);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .code-content {
+                font-size: 0.8rem;
+            }
+
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .code-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .code-content::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 10px;
+        }
+
+        .code-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body> <a href="../index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+    <div class="container">
+        <h2>📋 Details/Summary Demo</h2>
+        <p class="subtitle">Expandable content with smooth animations</p>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p>💡 <strong>Tip:</strong> Click on any item to expand and see the details. Pure HTML with CSS animations!
+            </p>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <h3>Live Preview</h3>
+
+            <details>
+                <summary>📚 List of Programming Languages</summary>
+                <div class="details-content">
+                    <ul>
+                        <li>Python</li>
+                        <li>Java</li>
+                        <li>JavaScript</li>
+                        <li>C++</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>🌐 Web Technologies</summary>
+                <div class="details-content">
+                    <p>Modern web development includes HTML5, CSS3, and JavaScript frameworks like React, Vue, and
+                        Angular.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>🎨 Design Tools</summary>
+                <div class="details-content">
+                    <ul>
+                        <li>Figma</li>
+                        <li>Adobe XD</li>
+                        <li>Sketch</li>
+                        <li>Photoshop</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>🚀 Popular Frameworks</summary>
+                <div class="details-content">
+                    <p>React, Angular, Vue.js, Svelte, and Next.js are among the most popular frontend frameworks in
+                        2024.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Code Display -->
+        <div class="code-window">
+            <div class="window-header">
+                <div class="window-button red"></div>
+                <div class="window-button yellow"></div>
+                <div class="window-button green"></div>
+                <div class="window-title">HTML</div>
+            </div>
+            <div class="code-content" id="codeDisplay"></div>
+        </div>
+
+        <!-- Copy Button -->
+        <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+            📋 Copy Code
+        </button>
+    </div>
+
+    <script>
+        // Display code with syntax highlighting
+        function displayCode() {
+            const code = `<span class="tag">&lt;details&gt;</span>
+  <span class="tag">&lt;summary&gt;</span><span class="text">List of Programming Languages</span><span class="tag">&lt;/summary&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="text">Python</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="text">Java</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="text">JavaScript</span><span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;p&gt;</span><span class="text">C++</span><span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/details&gt;</span>
+
+<span class="comment">/* CSS Animation */</span>
+<span class="selector">details</span> {
+  <span class="property">transition</span>: <span class="value">all 0.3s ease</span>;
+}
+
+<span class="selector">details[open] .content</span> {
+  <span class="property">animation</span>: <span class="value">slideDown 0.3s ease-out</span>;
+}
+
+<span class="at-rule">@keyframes</span> slideDown {
+  <span class="selector">from</span> {
+    <span class="property">opacity</span>: <span class="value">0</span>;
+    <span class="property">transform</span>: <span class="value">translateY(-10px)</span>;
+  }
+  <span class="selector">to</span> {
+    <span class="property">opacity</span>: <span class="value">1</span>;
+    <span class="property">transform</span>: <span class="value">translateY(0)</span>;
+  }
+}`;
+
+            document.getElementById('codeDisplay').innerHTML = code;
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const sourceCode = `<details>
+  <summary>List of Programming Languages</summary>
+  <p>Python</p>
+  <p>Java</p>
+  <p>JavaScript</p>
+  <p>C++</p>
+</details>
+
+<style>
+details {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+details[open] {
+  border-color: #667eea;
+}
+
+summary {
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px;
+}
+
+summary::before {
+  content: '▶';
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+details[open] .content {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>`;
+
+            const copyBtn = document.getElementById('copyBtn');
+
+            navigator.clipboard.writeText(sourceCode).then(() => {
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 Copy Code';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Initialize
+        displayCode();
+    </script>
+</body>
+
+</html>
