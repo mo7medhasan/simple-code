@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abbr Tag Demo</title>
+    <title>Custom Checkbox Demo</title>
     <style>
         /* Global Reset & Base Styles */
         * {
@@ -86,38 +86,79 @@
             font-size: 1rem;
         }
 
-        /* Preview section */
+        /* Checkbox preview section */
         .preview-section {
             background: #f8f9fa;
             padding: 40px;
             border-radius: 15px;
             margin-bottom: 30px;
             text-align: center;
-            min-height: 120px;
+            min-height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .preview-text {
-            font-size: 1.3rem;
-            color: #333;
-            line-height: 1.8;
+        /* Custom checkbox container */
+        .checkbox-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            user-select: none;
         }
 
-        /* Custom abbr styling */
-        abbr {
-            color: var(--abbr-color, #667eea);
-            text-decoration: var(--abbr-decoration, underline dotted);
-            text-decoration-thickness: 2px;
-            cursor: help;
-            font-weight: 600;
+        /* Hide default checkbox */
+        .checkbox-container input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Custom checkbox styling */
+        .custom-checkbox {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--accent-color, #667eea);
+            background: white;
+            border-radius: var(--checkbox-radius, 10px);
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-checkbox:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Checkmark styling */
+        .custom-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
             transition: all 0.3s ease;
         }
 
-        abbr:hover {
-            color: #764ba2;
-            text-decoration-color: #764ba2;
+        /* Checked state */
+        .checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+            background: var(--accent-color, #667eea);
+            border-color: var(--accent-color, #667eea);
+        }
+
+        .checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Checkbox label */
+        .checkbox-label {
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: 500;
         }
 
         /* Controls section */
@@ -139,23 +180,6 @@
             font-size: 0.95rem;
         }
 
-        /* Input field styling */
-        input[type="text"] {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
         /* Color picker styling */
         input[type="color"] {
             width: 100%;
@@ -170,14 +194,14 @@
             border-color: #667eea;
         }
 
-        /* Style buttons */
-        .style-buttons {
+        /* Shape buttons */
+        .shape-buttons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
-        .style-btn {
+        .shape-btn {
             padding: 15px;
             border: 2px solid #e0e0e0;
             background: white;
@@ -188,12 +212,12 @@
             color: #333;
         }
 
-        .style-btn:hover {
+        .shape-btn:hover {
             border-color: #667eea;
             transform: translateY(-2px);
         }
 
-        .style-btn.active {
+        .shape-btn.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: transparent;
@@ -268,8 +292,8 @@
                 font-size: 1.5rem;
             }
 
-            .style-buttons {
-                grid-template-columns: 1fr;
+            .shape-buttons {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .home-btn {
@@ -297,58 +321,47 @@
 
 <body>
     <!-- Home button -->
-    <a href="../index.html" class="home-btn">
+    <a href="./index.html" class="home-btn">
         <span>🏠</span>
         <span>Home</span>
     </a>
 
     <!-- Main content container -->
     <div class="container">
-        <h2>🔤 Abbr Tag Demo</h2>
-        <p class="subtitle">Create abbreviations with custom tooltips</p>
+        <h2>✅ Custom Checkbox</h2>
+        <p class="subtitle">Customize the color and shape of your checkbox</p>
 
-        <!-- Preview -->
+        <!-- Checkbox Preview -->
         <div class="preview-section">
-            <p class="preview-text">
-                Visit the <abbr id="demoAbbr" title="World Wide Web">WWW</abbr> today!
-            </p>
+            <label class="checkbox-container">
+                <input type="checkbox" id="demoCheckbox" checked>
+                <span class="custom-checkbox"></span>
+                <span class="checkbox-label">Check me!</span>
+            </label>
         </div>
 
         <!-- Controls Section -->
         <div class="controls-section">
-            <!-- Abbreviation Text -->
-            <div class="control-group">
-                <label for="abbrText">Abbreviation Text</label>
-                <input type="text" id="abbrText" value="WWW" placeholder="Enter abbreviation">
-            </div>
-
-            <!-- Title (Tooltip) -->
-            <div class="control-group">
-                <label for="abbrTitle">Title (Tooltip)</label>
-                <input type="text" id="abbrTitle" value="World Wide Web" placeholder="Enter full meaning">
-            </div>
-
             <!-- Color Control -->
             <div class="control-group">
-                <label for="colorPicker">Text Color</label>
+                <label for="colorPicker">Accent Color</label>
                 <input type="color" id="colorPicker" value="#667eea">
             </div>
 
-            <!-- Underline Style -->
+            <!-- Shape Control -->
             <div class="control-group">
-                <label>Underline Style</label>
-                <div class="style-buttons">
-                    <button class="style-btn active" data-style="underline dotted">Dotted</button>
-                    <button class="style-btn" data-style="underline solid">Solid</button>
-                    <button class="style-btn" data-style="underline wavy">Wavy</button>
-                    <button class="style-btn" data-style="none">None</button>
+                <label>Shape</label>
+                <div class="shape-buttons">
+                    <button class="shape-btn" data-radius="10px">Rounded</button>
+                    <button class="shape-btn active" data-radius="50%">Circle</button>
+                    <button class="shape-btn" data-radius="0px">Square</button>
                 </div>
             </div>
         </div>
 
         <!-- Code viewer section -->
         <div class="code-section">
-            <h3>💻 HTML Code</h3>
+            <h3>💻 CSS Code</h3>
             <div class="code-display" id="codeDisplay"></div>
             <button class="copy-btn" id="copyBtn" onclick="copyCode()">
                 Copy Code
@@ -358,94 +371,91 @@
 
     <script>
         // Get elements
-        const abbrText = document.getElementById('abbrText');
-        const abbrTitle = document.getElementById('abbrTitle');
         const colorPicker = document.getElementById('colorPicker');
-        const styleButtons = document.querySelectorAll('.style-btn');
-        const demoAbbr = document.getElementById('demoAbbr');
+        const shapeButtons = document.querySelectorAll('.shape-btn');
+        const customCheckbox = document.querySelector('.custom-checkbox');
+        const codeDisplay = document.getElementById('codeDisplay');
         
         // Current settings
-        let currentText = 'WWW';
-        let currentTitle = 'World Wide Web';
         let currentColor = '#667eea';
-        let currentStyle = 'underline dotted';
-
-        // Update abbreviation text
-        abbrText.addEventListener('input', (e) => {
-            currentText = e.target.value || 'WWW';
-            updatePreview();
-            updateCode();
-        });
-
-        // Update title
-        abbrTitle.addEventListener('input', (e) => {
-            currentTitle = e.target.value || 'World Wide Web';
-            updatePreview();
-            updateCode();
-        });
+        let currentRadius = '50%';
 
         // Update color
         colorPicker.addEventListener('input', (e) => {
             currentColor = e.target.value;
-            updatePreview();
+            updateStyles();
             updateCode();
         });
 
-        // Update style
-        styleButtons.forEach(btn => {
+        // Update shape
+        shapeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 // Remove active class from all buttons
-                styleButtons.forEach(b => b.classList.remove('active'));
+                shapeButtons.forEach(b => b.classList.remove('active'));
                 // Add active class to clicked button
                 btn.classList.add('active');
-                // Update style
-                currentStyle = btn.dataset.style;
-                updatePreview();
+                // Update radius
+                currentRadius = btn.dataset.radius;
+                updateStyles();
                 updateCode();
             });
         });
 
-        // Update preview
-        function updatePreview() {
-            demoAbbr.textContent = currentText;
-            demoAbbr.title = currentTitle;
-            document.documentElement.style.setProperty('--abbr-color', currentColor);
-            document.documentElement.style.setProperty('--abbr-decoration', currentStyle);
+        // Apply styles to checkbox
+        function updateStyles() {
+            document.documentElement.style.setProperty('--accent-color', currentColor);
+            document.documentElement.style.setProperty('--checkbox-radius', currentRadius);
         }
 
-        // Generate and display HTML code
+        // Generate and display CSS code
         function updateCode() {
-            const htmlCode = `<abbr title="${currentTitle}">${currentText}</abbr>`;
-            
-            const cssCode = `abbr {
-    color: ${currentColor};
-    text-decoration: ${currentStyle};
-    text-decoration-thickness: 2px;
-    cursor: help;
+            const cssCode = `input {
+    accent-color: ${currentColor};
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+    width: 50px;
+    height: 50px;
+    border: 3px solid ${currentColor};
+    border-radius: ${currentRadius};
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox:checked {
+    background: ${currentColor};
+    border-color: ${currentColor};
 }`;
 
-            const fullCode = `<!-- HTML -->\n${htmlCode}\n\n/* CSS */\n${cssCode}`;
-            
-            document.getElementById('codeDisplay').innerHTML = `<pre>${fullCode}</pre>`;
+            codeDisplay.innerHTML = `<pre>${cssCode}</pre>`;
         }
 
         // Copy code to clipboard
         function copyCode() {
             const copyBtn = document.getElementById('copyBtn');
             
-            const htmlCode = `<abbr title="${currentTitle}">${currentText}</abbr>`;
-            
-            const cssCode = `abbr {
-    color: ${currentColor};
-    text-decoration: ${currentStyle};
-    text-decoration-thickness: 2px;
-    cursor: help;
-}`;
+            const cssCode = `input {
+    accent-color: ${currentColor};
+}
 
-            const fullCode = `<!-- HTML -->\n${htmlCode}\n\n/* CSS */\n${cssCode}`;
+/* Custom Checkbox */
+.custom-checkbox {
+    width: 50px;
+    height: 50px;
+    border: 3px solid ${currentColor};
+    border-radius: ${currentRadius};
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.custom-checkbox:checked {
+    background: ${currentColor};
+    border-color: ${currentColor};
+}`;
             
             // Use the Clipboard API to copy text
-            navigator.clipboard.writeText(fullCode).then(() => {
+            navigator.clipboard.writeText(cssCode).then(() => {
                 // Change button text and style on success
                 copyBtn.textContent = '✓ Copied!';
                 copyBtn.classList.add('copied');
@@ -466,7 +476,7 @@
         }
 
         // Initialize
-        updatePreview();
+        updateStyles();
         updateCode();
     </script>
 </body>
