@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery List Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        #itemInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #itemInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #addButton {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        #addButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        #addButton:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .list-section {
+            margin-top: 30px;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .list-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        #itemList {
+            list-style: none;
+        }
+
+        .list-item {
+            background: #f8f9fa;
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .list-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .item-text {
+            color: #333;
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .empty-text {
+            font-size: 16px;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        /* Home button in top left */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: light-dark(white, #1e1e2e);
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px light-dark(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            background: light-dark(#f8f9ff, #2d2d3d);
+        }
+
+        .home-btn:active {
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .home-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Home button -->
+    <a href="./index.html" class="home-btn">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+    <div class="container">
+        <h1>📝 List Manager</h1>
+        <p class="subtitle">Add and manage your items effortlessly</p>
+
+        <div class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="itemInput" placeholder="Enter an item..." autocomplete="off">
+                <button id="addButton">Add Item</button>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+
+        <div class="list-section">
+            <div class="list-header">
+                <h2 class="list-title">Your Items</h2>
+                <span class="item-count" id="itemCount">0 items</span>
+            </div>
+            <ul id="itemList">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <div class="empty-text">No items yet. Add your first item above!</div>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let itemCounter = 0;
+
+            // Update item count
+            function updateItemCount() {
+                const count = $('#itemList li').length;
+                $('#itemCount').text(count + (count === 1 ? ' item' : ' items'));
+            }
+
+            // Show error message
+            function showError(message) {
+                $('#errorMessage')
+                    .text(message)
+                    .fadeIn(300)
+                    .delay(2000)
+                    .fadeOut(300);
+            }
+
+            // Add item function
+            function addItem() {
+                const inputValue = $('#itemInput').val().trim();
+
+                // Validation
+                if (inputValue === '') {
+                    showError('⚠️ Please enter an item before adding!');
+                    $('#itemInput').focus();
+                    return;
+                }
+
+                // Remove empty state if it exists
+                $('.empty-state').remove();
+
+                // Create new list item
+                itemCounter++;
+                const listItem = $('<li>')
+                    .addClass('list-item')
+                    .html(`
+            <span class="item-text">${inputValue}</span>
+            <button class="delete-btn">Delete</button>
+          `);
+
+                // Append to list
+                $('#itemList').append(listItem);
+
+                // Clear input
+                $('#itemInput').val('').focus();
+
+                // Update count
+                updateItemCount();
+            }
+
+            // Delete item function
+            function deleteItem(item) {
+                $(item).addClass('fade-out');
+
+                setTimeout(function () {
+                    $(item).remove();
+                    updateItemCount();
+
+                    // Show empty state if no items left
+                    if ($('#itemList li').length === 0) {
+                        $('#itemList').html(`
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-text">No items yet. Add your first item above!</div>
+              </div>
+            `);
+                    }
+                }, 500);
+            }
+
+            // Event listeners
+            $('#addButton').on('click', addItem);
+
+            $('#itemInput').on('keypress', function (e) {
+                if (e.which === 13) { // Enter key
+                    addItem();
+                }
+            });
+
+            // Event delegation for delete buttons
+            $('#itemList').on('click', '.delete-btn', function () {
+                deleteItem($(this).closest('.list-item'));
+            });
+
+            // Focus input on load
+            $('#itemInput').focus();
+        });
+    </script>
+</body>
+
+</html>
